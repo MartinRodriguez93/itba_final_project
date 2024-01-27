@@ -1,0 +1,9 @@
+version: 2
+
+sources:
+    - name: staging
+      database: gold-circlet-411323
+      schema: demo_dataset
+
+      tables:
+            - name: taxis_table
