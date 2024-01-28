@@ -6,4 +6,4 @@ sources:
       schema: source_dataset
 
       tables:
-            - name: taxis_table
+            - name: source_system_orders
