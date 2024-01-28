@@ -37,4 +37,6 @@ clean-targets:         # directories to be removed by `dbt clean`
 
 models:
   itba_final_project:
-    # Applies to all files under models/example/
+    # Applies to all files under models/staging/
+    staging:
+      +materialized: view

@@ -1,9 +1,0 @@
-version: 2
-
-sources:
-    - name: staging
-      database: gold-circlet-411323
-      schema: source_dataset
-
-      tables:
-            - name: source_system_orders
