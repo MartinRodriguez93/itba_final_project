@@ -19,7 +19,4 @@ with
 
 select *
 from stg_orders
-where
-    1 = 1
-    -- and order_date = ''
     
