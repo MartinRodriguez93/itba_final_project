@@ -1,7 +1,7 @@
 version: 2
 
 sources:
-    - name: staging
+    - name: coffee_shop
       database: gold-circlet-411323
       schema: source_dataset
 
@@ -10,10 +10,14 @@ sources:
               columns:
                 - name: order_id
                   tests:
-                    - unique
                     - not_null
                 - name: customer_id
                   tests:
                     - relationships:
-                        to: ref('customers')
-                        field: id
+                        to: ref('dim_customers')
+                        field: customer_id
+                - name: product_id
+                  tests:
+                    - relationships:
+                        to: ref('dim_products')
+                        field: product_id

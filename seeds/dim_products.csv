@@ -1,4 +1,4 @@
-Product ID,Coffee Type,Roast Type,Size,Unit Price,Price per 100g,Profit
+Product_ID,Coffee_Type,Roast_Type,Size,Unit Price,Price_100g,Profit
 A-L-0.2,Ara,L,0.2,3.885,1.9425,0.34965
 A-L-0.5,Ara,L,0.5,7.77,1.554,0.6993
 A-L-1,Ara,L,1.0,12.95,1.295,1.1655
