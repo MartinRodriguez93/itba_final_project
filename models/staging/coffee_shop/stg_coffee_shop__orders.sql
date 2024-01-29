@@ -13,7 +13,8 @@ with
             product_id,
             quantity,
             PARSE_DATE('%F', ingestion_date) AS ingested_at,
-            update_ts
+            update_ts,
+            'test_ci' AS test_ci
 
         from source
 
