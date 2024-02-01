@@ -9,7 +9,6 @@ order_approved_at STRING,
 order_delivered_carrier_date STRING,
 order_delivered_customer_date STRING,
 order_estimated_delivery_date STRING,
-order_purchase_date	STRING,
 INGESTION_DATE STRING,
 UPDATE_TS STRING	
 )
