@@ -12,13 +12,14 @@ sources:
                   tests:
                     - unique
                     - not_null
-                # - name: customer_id
-                #   tests:
-                #     - relationships:
-                #         to: ref('dim_customers')
-                #         field: customer_id
-                # - name: product_id
-                #   tests:
-                #     - relationships:
-                #         to: ref('dim_products')
-                #         field: product_id
+                - name: customer_id
+                  tests:
+                    - relationships:
+                        to: ref('dim_customers')
+                        field: customer_id
+                - name: order_status
+                  tests:
+                    - accepted_values:
+                        values: ['shipped', 'delivered','unavailable','invoiced']
+                        config:
+                          severity: warn

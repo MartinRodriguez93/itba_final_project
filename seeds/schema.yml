@@ -8,12 +8,6 @@ seeds:
         tests:
           - unique
           - not_null
-      - name: loyalty_card
-        tests:
-          - accepted_values:
-              values: ['Yes', 'No']
-              config:
-                severity: warn
   - name: dim_products
     description: A detail of each of the company products
     columns:
