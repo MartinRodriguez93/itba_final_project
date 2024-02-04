@@ -2,6 +2,7 @@ version: 2
 
 sources:
     - name: olist
+      description: Source system transactional orders data
       database: gold-circlet-411323
       schema: source_dataset
 

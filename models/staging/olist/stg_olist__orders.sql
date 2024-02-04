@@ -5,6 +5,8 @@ with
     stg_orders as (
 
         select
+            --An order might have multiple items.
+            --Each item might be fulfilled by a distinct seller.
             order_id,
             customer_id,
             order_status,
