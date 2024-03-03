@@ -6,7 +6,7 @@ source as (
 
 ),
 
-renamed as (
+stg_order_reviews as (
 
     select
         --There could be more than one order_id per review_id
@@ -27,4 +27,4 @@ renamed as (
 
 )
 
-select * from renamed
+select * from stg_order_reviews
