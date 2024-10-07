@@ -46,3 +46,28 @@ create or replace TABLE RAW.ORDERS.SOURCE_SYSTEM_ORDER_PAYMENTS (
 	INGESTION_DATE NUMBER(38,0),
 	UPDATE_TS TIMESTAMP_NTZ(9)
 );
+
+CREATE TABLE RAW.ORDERS.customer_data (
+    customer_id VARCHAR(255),
+    customer_unique_id VARCHAR(255),
+    customer_zip_code_prefix VARCHAR(10),
+    customer_city VARCHAR(255),
+    customer_state VARCHAR(2)
+);
+
+CREATE TABLE RAW.ORDERS.product_data (
+    product_id VARCHAR(255),
+    product_category_name VARCHAR(255),
+    product_name_length INT,
+    product_description_length INT,
+    product_photos_qty INT,
+    product_weight_g INT,
+    product_length_cm INT,
+    product_height_cm INT,
+    product_width_cm INT
+);
+
+CREATE TABLE RAW.ORDERS.product_category_translation (
+    product_category_name VARCHAR(255),
+    product_category_name_english VARCHAR(255)
+);
