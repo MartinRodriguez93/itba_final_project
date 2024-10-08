@@ -1,0 +1,65 @@
+[
+    {
+      "name": "review_id",
+      "mode": "",
+      "type": "STRING",
+      "description": null,
+      "fields": []
+    },
+    {
+      "name": "order_id",
+      "mode": "",
+      "type": "STRING",
+      "description": null,
+      "fields": []
+    },
+    {
+      "name": "review_score",
+      "mode": "",
+      "type": "INTEGER",
+      "description": null,
+      "fields": []
+    },
+    {
+      "name": "review_comment_title",
+      "mode": "",
+      "type": "STRING",
+      "description": null,
+      "fields": []
+    },
+    {
+      "name": "review_comment_message",
+      "mode": "",
+      "type": "STRING",
+      "description": null,
+      "fields": []
+    },
+    {
+      "name": "review_creation_date",
+      "mode": "",
+      "type": "STRING",
+      "description": null,
+      "fields": []
+    },
+    {
+      "name": "review_answer_timestamp",
+      "mode": "",
+      "type": "STRING",
+      "description": null,
+      "fields": []
+    },
+    {
+      "name": "INGESTION_DATE",
+      "mode": "",
+      "type": "STRING",
+      "description": null,
+      "fields": []
+    },
+    {
+      "name": "UPDATE_TS",
+      "mode": "",
+      "type": "STRING",
+      "description": null,
+      "fields": []
+    }
+  ]

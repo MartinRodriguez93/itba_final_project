@@ -1,0 +1,52 @@
+[
+    {
+      "name": "order_id",
+      "mode": "",
+      "type": "STRING"
+    },
+    {
+      "name": "customer_id",
+      "mode": "",
+      "type": "STRING"
+    },
+    {
+      "name": "order_status",
+      "mode": "",
+      "type": "STRING"
+    },
+    {
+      "name": "order_purchase_timestamp",
+      "mode": "",
+      "type": "STRING"
+    },
+    {
+      "name": "order_approved_at",
+      "mode": "",
+      "type": "STRING"
+    },
+    {
+      "name": "order_delivered_carrier_date",
+      "mode": "",
+      "type": "STRING"
+    },
+    {
+      "name": "order_delivered_customer_date",
+      "mode": "",
+      "type": "STRING"
+    },
+    {
+      "name": "order_estimated_delivery_date",
+      "mode": "",
+      "type": "STRING"
+    },
+    {
+      "name": "INGESTION_DATE",
+      "mode": "",
+      "type": "STRING"
+    },
+    {
+      "name": "UPDATE_TS",
+      "mode": "",
+      "type": "STRING"
+    }
+  ]
