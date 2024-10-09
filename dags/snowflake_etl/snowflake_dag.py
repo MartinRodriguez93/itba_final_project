@@ -29,7 +29,7 @@ _SNOWFLAKE_SCHEMA = "ORDERS"
 DAG_DICT = {"olist_orders_dataset": ['olist_orders_dataset.csv','olist_orders_{{ ds }}.csv','source_system_order','order_purchase_timestamp'],
             "olist_order_reviews_dataset": ['olist_order_reviews_dataset.csv','olist_order_reviews_{{ ds }}.csv','source_system_order_reviews','review_creation_date'],
             "olist_order_items_dataset": ['olist_order_items_dataset.csv','olist_order_items_{{ ds }}.csv','source_system_order_items','shipping_limit_date'],
-            "olist_order_payments_dataset": ['olist_order_payments_dataset.csv','olist_order_payments{{ ds }}.csv','source_system_order_payments','PAYMENT_DATE_OK']
+            "olist_order_payments_dataset": ['olist_order_payments_dataset.csv','olist_order_payments{{ ds }}.csv','source_system_order_payments','PAYMENT_DATE']
             }
 
 # DAG DEFINITION ----------------------------------------------------------------------------------------
