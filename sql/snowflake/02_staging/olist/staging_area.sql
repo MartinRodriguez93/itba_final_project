@@ -32,14 +32,13 @@ from renamed
 
 -- stg_olist__order_reviews.sql
 ;
+create or replace view staging.orders.order_reviews as (
 with source as (
 select
     *
 from raw.orders.source_system_order_reviews
 )
 --There could be more than one order_id per review_id
---Referential integrity with source_system_orders fails because of cut off time of date.
---Ex: 0764f8b9a45b0305b75e1bbd614ffaaa dated 2017-09-16 
 , renamed as (
 select
     review_id, --primery key
@@ -56,6 +55,7 @@ from source
 select
     *
 from renamed
+)
 ;
 
 --XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX

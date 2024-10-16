@@ -1,4 +1,3 @@
---int_marketing_orders_join_customers
 ;
 create or replace view intermediate.marketing.orders_join_customers as (
 select
@@ -22,8 +21,8 @@ left join staging.orders.customers as stg_customers
 )
 ;
 
---int_marketing_order_items_join_sellers
 ;
+create or replace view intermediate.marketing.order_items_join_sellers as (
 select
 	stg_order_items.order_item_key, --primery key
 	stg_order_items.ORDER_ID,
@@ -41,9 +40,9 @@ select
 from staging.orders.order_items as stg_order_items
 left join staging.orders.sellers as stg_sellers
     on stg_order_items.SELLER_ID = stg_sellers.SELLER_ID
+)
 ;
 
---int_finance_orders_join_payments
 ;
 create or replace view intermediate.finance.orders_join_payments as (
 select
@@ -65,7 +64,6 @@ left join intermediate.marketing.orders_join_customers as int_orders_customers
 )
 ;
 
---int_marketing_order_items_join_products
 ;
 create or replace view intermediate.marketing.order_items_join_products as (
 select
@@ -92,5 +90,34 @@ select
 from staging.orders.order_items as stg_order_items
 left join staging.orders.products as stg_products
     on stg_order_items.product_id = stg_products.product_id
+)
+;
+
+;
+create or replace view intermediate.customer_support.order_reviews_join_orders as (
+select
+    stg_reviews.review_id, --primery key
+    stg_reviews.order_id,
+    stg_reviews.review_score, --Values between 1 and 5
+    stg_reviews.review_comment_message,
+    stg_reviews.review_creation_at,
+    stg_reviews.review_answer_at,
+    stg_reviews.event_date as order_review_date,
+    stg_reviews.updated_at,
+    stg_orders.customer_id,
+    stg_orders.order_status,
+    stg_orders.order_purchase_at,
+    stg_orders.order_approved_at,
+    stg_orders.order_delivered_carrier_at,
+    stg_orders.order_delivered_customer_at,
+    stg_orders.order_estimated_delivery_at,
+    stg_orders.event_date as order_date,
+from staging.orders.order_reviews as stg_reviews
+left join staging.orders.orders as stg_orders
+    on stg_reviews.order_id = stg_orders.order_id
+where
+    --Referential integrity with source_system_orders fails because of cut off time of date.
+    --Ex: 0764f8b9a45b0305b75e1bbd614ffaaa dated 2017-09-16
+    stg_orders.order_id is not null
 )
 ;
