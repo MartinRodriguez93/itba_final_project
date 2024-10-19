@@ -18,7 +18,7 @@ select
     order_delivered_carrier_date as order_delivered_carrier_at,
     order_delivered_customer_date as order_delivered_customer_at,
     order_estimated_delivery_date as order_estimated_delivery_at,
-    TO_TIMESTAMP(INGESTION_DATE / 1e9)::date as event_date,
+    TO_TIMESTAMP(INGESTION_DATE / 1e9)::date as order_date,
     UPDATE_TS as updated_at
 from source
 )

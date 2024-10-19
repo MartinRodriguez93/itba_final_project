@@ -1,10 +1,10 @@
---customer support
+--sales/logistics
 
 --Average Delivery Time
 ;
 SELECT 
     AVG(DATEDIFF('day', ORDER_PURCHASE_AT, ORDER_DELIVERED_CUSTOMER_AT)) AS avg_delivery_time_days
-from intermediate.marketing.orders_join_customers
+from intermediate.marketing.orders_join_customers_reviews
 WHERE 
     ORDER_DELIVERED_CUSTOMER_AT IS NOT NULL
       AND ORDER_PURCHASE_AT IS NOT NULL
@@ -17,7 +17,7 @@ SELECT
             WHEN ORDER_DELIVERED_CUSTOMER_AT <= ORDER_ESTIMATED_DELIVERY_AT 
             THEN 1 
           END) * 100.0 / COUNT(*)) AS on_time_delivery_rate
-from intermediate.marketing.orders_join_customers
+from intermediate.marketing.orders_join_customers_reviews
 WHERE 
     ORDER_DELIVERED_CUSTOMER_AT IS NOT NULL
       AND ORDER_ESTIMATED_DELIVERY_AT IS NOT NULL
@@ -30,7 +30,7 @@ WITH customer_order_counts AS (
     SELECT 
         customer_unique_id, 
         COUNT(ORDER_ID) AS order_count
-    from intermediate.marketing.orders_join_customers
+    from intermediate.marketing.orders_join_customers_reviews
     GROUP BY 1
 )
 SELECT 
@@ -134,11 +134,88 @@ ORDER BY 2 DESC;
 
 --marketing
 
+--Total sales and quantity of orders sold for each category
 ;
-select
-    *
--- from intermediate.marketing.order_items_join_products
--- from intermediate.marketing.order_items_join_sellers
--- from intermediate.customer_support.order_reviews_join_orders
--- limit 10
+WITH category_sales AS (
+  SELECT 
+    PRODUCT_CATEGORY_NAME,
+    SUM(PRICE) AS TOTAL_SALES,
+    COUNT(ORDER_ITEM_ID) AS TOTAL_QUANTITY
+  FROM intermediate.marketing.order_items_join_sellers_products
+  GROUP BY 1
+),
+total_sales AS (
+  SELECT SUM(TOTAL_SALES) AS GRAND_TOTAL
+  FROM category_sales
+)
+SELECT 
+  cs.PRODUCT_CATEGORY_NAME,
+  cs.TOTAL_SALES,
+  cs.TOTAL_QUANTITY,
+  ROUND((cs.TOTAL_SALES / ts.GRAND_TOTAL) * 100, 2) AS SALES_PERCENTAGE
+FROM category_sales cs, total_sales ts
+order by 2 desc
+;
+
+--Total sales for each seller
+;
+WITH seller_sales AS (
+  SELECT 
+    SELLER_ID,
+    SUM(PRICE) AS TOTAL_SALES
+  FROM intermediate.marketing.order_items_join_sellers_products
+  GROUP BY 1
+),
+total_seller_sales AS (
+  SELECT SUM(TOTAL_SALES) AS GRAND_TOTAL
+  FROM seller_sales
+)
+SELECT 
+  ss.SELLER_ID,
+  ss.TOTAL_SALES,
+  ROUND((ss.TOTAL_SALES / tss.GRAND_TOTAL) * 100, 2) AS SALES_PERCENTAGE
+FROM seller_sales ss, total_seller_sales tss
+order by 2 desc
+;
+
+--XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
+-- customer support
+
+-- Average REVIEW_SCORE by CUSTOMER_ID
+;
+SELECT 
+    CUSTOMER_ID, 
+    AVG(REVIEW_SCORE) AS AVERAGE_REVIEW_SCORE
+from intermediate.marketing.orders_join_customers_reviews
+WHERE REVIEW_SCORE IS NOT NULL
+GROUP BY 1;
+
+--Percentage of Orders with Reviews
+;
+WITH total_orders AS (
+  SELECT COUNT(ORDER_ID) AS TOTAL_ORDERS
+  FROM intermediate.marketing.orders_join_customers_reviews
+),
+orders_with_reviews AS (
+  SELECT COUNT(ORDER_ID) AS ORDERS_WITH_REVIEWS
+  FROM intermediate.marketing.orders_join_customers_reviews
+  WHERE REVIEW_ID IS NOT NULL
+)
+SELECT 
+    (owr.ORDERS_WITH_REVIEWS / tor.TOTAL_ORDERS) * 100 AS PERCENTAGE_ORDERS_WITH_REVIEWS
+FROM orders_with_reviews owr, total_orders tor
+;
+
+--. Response Time Analysis (Difference between REVIEW_CREATION_AT and REVIEW_ANSWER_AT)
+;
+SELECT 
+    CUSTOMER_ID, 
+    REVIEW_ID, 
+    DATEDIFF('day', REVIEW_CREATION_AT, REVIEW_ANSWER_AT) AS RESPONSE_TIME_DAYS
+FROM intermediate.marketing.orders_join_customers_reviews
+WHERE 
+    REVIEW_CREATION_AT IS NOT NULL
+    AND REVIEW_ANSWER_AT IS NOT NULL
+ORDER BY 3 DESC
 ;
