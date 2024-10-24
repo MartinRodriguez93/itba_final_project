@@ -86,7 +86,18 @@ def create_dag(dag_id, default_args, dataset_source, dataset_file, snowflake_tab
 
         # TRANSFORMATION ---------------------------------------------------------------------
 
-        download_dataset_task >> delete_query_task >> transform_source_system_task
+        orders_join_customers_reviews_task = SQLExecuteQueryOperator(
+            task_id="orders_join_customers_reviews_task",
+            conn_id=_SNOWFLAKE_CONN_ID,
+            database=_SNOWFLAKE_DB,
+            sql='int__mkt__orders_join_customers_reviews.sql',
+            params={
+                "db_name": _SNOWFLAKE_DB,
+                "schema_name": _SNOWFLAKE_SCHEMA
+            }
+        )        
+
+        download_dataset_task >> delete_query_task >> transform_source_system_task >> orders_join_customers_reviews_task
 
     return generated_dag
 
