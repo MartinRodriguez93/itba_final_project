@@ -71,3 +71,10 @@ CREATE TABLE RAW.ORDERS.product_category_translation (
     product_category_name VARCHAR(255),
     product_category_name_english VARCHAR(255)
 );
+
+CREATE TABLE RAW.ORDERS.sellers (
+    seller_id STRING,
+    seller_zip_code_prefix INTEGER,
+    seller_city STRING,
+    seller_state STRING
+);
