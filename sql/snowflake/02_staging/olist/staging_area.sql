@@ -182,7 +182,7 @@ create or replace view staging.orders.sellers as (
 with source as (
 select
     *
-from RAW.ORDERS.seller_data
+from RAW.ORDERS.sellers
 )
 , renamed as (
 select

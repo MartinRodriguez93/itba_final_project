@@ -11,7 +11,7 @@ def transform_source_system(src_file,
                             SF_USER, 
                             SF_ACCOUNT, 
                             SF_PWD, 
-                            database, 
+                            db_name, 
                             table_name,
                             event_dt_col
                             ):
