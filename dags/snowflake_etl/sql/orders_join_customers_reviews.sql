@@ -44,9 +44,9 @@ SELECT
     stg_reviews.review_answer_at,
     stg_reviews.event_date as order_review_date,
     stg_orders.updated_at
-FROM STAGING.ORDERS.source_system_order AS stg_orders
-LEFT JOIN staging.orders.customers AS stg_customers
+FROM {{ params.stg_db_name }}.{{ params.schema_name }}.source_system_order AS stg_orders
+LEFT JOIN {{ params.stg_db_name }}.{{ params.schema_name }}.customers AS stg_customers
     ON stg_orders.customer_id = stg_customers.customer_id
-LEFT JOIN STAGING.ORDERS.SOURCE_SYSTEM_ORDER_REVIEWS AS stg_reviews
+LEFT JOIN {{ params.stg_db_name }}.{{ params.schema_name }}.SOURCE_SYSTEM_ORDER_REVIEWS AS stg_reviews
     ON stg_reviews.order_id = stg_orders.order_id
 WHERE stg_orders.order_date = '{{ ds }}';

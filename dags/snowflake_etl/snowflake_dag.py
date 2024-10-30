@@ -53,13 +53,13 @@ with DAG('snowflake_dag', default_args=DEFAULT_ARGS, template_searchpath=[TEMPLA
     staging_tasks = []
     
     for dataset, params in DAG_DICT.items():
-        dataset_source, dataset_file, snowflake_table, event_dt_col, staging_query = params
+        DATASET_SOURCE, DATASET_FILE, TABLE_NAME, EVENT_DT_COL, staging_query = params
 
         # GENERATION ---------------------------------------------------------------------
 
         download_task = BashOperator(
             task_id=f"download_{dataset}",
-            bash_command=f"bash {PATH_TO_LOCAL_HOME}/dags/scripts/download_dataset.sh {PATH_TO_LOCAL_HOME} {dataset_source}"
+            bash_command=f"bash {PATH_TO_LOCAL_HOME}/dags/scripts/download_dataset.sh {PATH_TO_LOCAL_HOME} {DATASET_SOURCE}"
         )
 
         # INGESTION ---------------------------------------------------------------------
@@ -72,8 +72,8 @@ with DAG('snowflake_dag', default_args=DEFAULT_ARGS, template_searchpath=[TEMPLA
             params={
                 "raw_db_name": SNOWFLAKE_RAW_DB,
                 "schema_name": SNOWFLAKE_SCHEMA,
-                "table_name": snowflake_table,
-                "event_dt_col": event_dt_col
+                "table_name": TABLE_NAME,
+                "event_dt_col": EVENT_DT_COL
             }
         )
 
@@ -81,16 +81,16 @@ with DAG('snowflake_dag', default_args=DEFAULT_ARGS, template_searchpath=[TEMPLA
             task_id=f"transform_{dataset}",
             python_callable=transform_source_system,
             op_kwargs={
-                "src_file": f"{PATH_TO_LOCAL_HOME}/{dataset_source}",
-                "file_name": dataset_file,
-                "dataset_source": dataset_source,
+                "src_file": f"{PATH_TO_LOCAL_HOME}/{DATASET_SOURCE}",
+                "file_name": DATASET_FILE,
+                "dataset_source": DATASET_SOURCE,
                 "ingestion_date": RUN_DS,
                 'SF_USER': SF_USER,
                 "SF_ACCOUNT": SF_ACCOUNT,
                 "SF_PWD": SF_PWD,
                 "db_name": SNOWFLAKE_RAW_DB,
-                "table_name": snowflake_table,
-                "event_dt_col": event_dt_col
+                "table_name": TABLE_NAME,
+                "event_dt_col": EVENT_DT_COL
             },
         )
 
@@ -103,14 +103,12 @@ with DAG('snowflake_dag', default_args=DEFAULT_ARGS, template_searchpath=[TEMPLA
                 "raw_db_name": SNOWFLAKE_RAW_DB,
                 "stg_db_name": SNOWFLAKE_STAGING_DB,
                 "schema_name": SNOWFLAKE_SCHEMA,
-                "table_name": snowflake_table,
-                "event_dt_col": event_dt_col
+                "table_name": TABLE_NAME,
+                "event_dt_col": EVENT_DT_COL
             }
         )
 
         # Set task dependencies for each dataset
-        # download_task >> delete_query_task >> transform_task
-        # transform_tasks.append(transform_task)
         download_task >> delete_query_task >> transform_task >> staging_query_task
         staging_tasks.append(staging_query_task)
 
@@ -122,11 +120,10 @@ with DAG('snowflake_dag', default_args=DEFAULT_ARGS, template_searchpath=[TEMPLA
         database=SNOWFLAKE_RAW_DB,
         sql='sql/orders_join_customers_reviews.sql',
         params={
-            "db_name": SNOWFLAKE_RAW_DB,
+            "stg_db_name": SNOWFLAKE_STAGING_DB,
             "schema_name": SNOWFLAKE_SCHEMA
         }
     )
 
     # Set dependency so that orders_join_customers_reviews_task runs after all transform_tasks finish
-    # transform_tasks >> orders_join_customers_reviews_task
     staging_tasks >> orders_join_customers_reviews_task
