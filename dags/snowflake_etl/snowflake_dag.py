@@ -22,15 +22,16 @@ SNOWFLAKE_CONN_ID = "snowflake_conn"
 # Common variables
 RUN_DS = '{{ ds }}'
 TEMPLATE_SEARCHPATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "../snowflake_etl/sql")
-SNOWFLAKE_DB = "RAW"
+SNOWFLAKE_RAW_DB = "RAW"
+SNOWFLAKE_STAGING_DB = "STAGING"
 SNOWFLAKE_SCHEMA = "ORDERS"
 
 # Unique variables
 DAG_DICT = {
-    "olist_orders_dataset": ['olist_orders_dataset.csv', 'olist_orders_{{ ds }}.csv', 'source_system_order', 'order_purchase_timestamp'],
-    "olist_order_reviews_dataset": ['olist_order_reviews_dataset.csv', 'olist_order_reviews_{{ ds }}.csv', 'source_system_order_reviews', 'review_creation_date'],
-    "olist_order_items_dataset": ['olist_order_items_dataset.csv', 'olist_order_items_{{ ds }}.csv', 'source_system_order_items', 'shipping_limit_date'],
-    "olist_order_payments_dataset": ['olist_order_payments_dataset.csv', 'olist_order_payments{{ ds }}.csv', 'source_system_order_payments', 'PAYMENT_DATE']
+    "olist_orders_dataset": ['olist_orders_dataset.csv', 'olist_orders_{{ ds }}.csv', 'source_system_order', 'order_purchase_timestamp','stg_olist__orders.sql'],
+    "olist_order_reviews_dataset": ['olist_order_reviews_dataset.csv', 'olist_order_reviews_{{ ds }}.csv', 'source_system_order_reviews', 'review_creation_date','stg_olist__order_reviews.sql'],
+    "olist_order_items_dataset": ['olist_order_items_dataset.csv', 'olist_order_items_{{ ds }}.csv', 'source_system_order_items', 'shipping_limit_date','stg_olist__order_items.sql'],
+    "olist_order_payments_dataset": ['olist_order_payments_dataset.csv', 'olist_order_payments{{ ds }}.csv', 'source_system_order_payments', 'PAYMENT_DATE','stg_olist__order_payments.sql']
 }
 
 # DAG DEFINITION ----------------------------------------------------------------------------------------
@@ -49,10 +50,10 @@ DEFAULT_ARGS = {
 
 with DAG('snowflake_dag', default_args=DEFAULT_ARGS, template_searchpath=[TEMPLATE_SEARCHPATH]) as dag:
 
-    transform_tasks = []
+    staging_tasks = []
     
     for dataset, params in DAG_DICT.items():
-        dataset_source, dataset_file, snowflake_table, event_dt_col = params
+        dataset_source, dataset_file, snowflake_table, event_dt_col, staging_query = params
 
         # GENERATION ---------------------------------------------------------------------
 
@@ -66,10 +67,10 @@ with DAG('snowflake_dag', default_args=DEFAULT_ARGS, template_searchpath=[TEMPLA
         delete_query_task = SQLExecuteQueryOperator(
             task_id=f"delete_query_{dataset}",
             conn_id=SNOWFLAKE_CONN_ID,
-            database=SNOWFLAKE_DB,
+            database=SNOWFLAKE_RAW_DB,
             sql='delete_query.sql',
             params={
-                "db_name": SNOWFLAKE_DB,
+                "raw_db_name": SNOWFLAKE_RAW_DB,
                 "schema_name": SNOWFLAKE_SCHEMA,
                 "table_name": snowflake_table,
                 "event_dt_col": event_dt_col
@@ -87,28 +88,45 @@ with DAG('snowflake_dag', default_args=DEFAULT_ARGS, template_searchpath=[TEMPLA
                 'SF_USER': SF_USER,
                 "SF_ACCOUNT": SF_ACCOUNT,
                 "SF_PWD": SF_PWD,
-                "db_name": SNOWFLAKE_DB,
+                "db_name": SNOWFLAKE_RAW_DB,
                 "table_name": snowflake_table,
                 "event_dt_col": event_dt_col
             },
         )
 
+        staging_query_task = SQLExecuteQueryOperator(
+            task_id=f"staging_query_{dataset}",
+            conn_id=SNOWFLAKE_CONN_ID,
+            database=SNOWFLAKE_STAGING_DB,
+            sql=f"{staging_query}", 
+            params={
+                "raw_db_name": SNOWFLAKE_RAW_DB,
+                "stg_db_name": SNOWFLAKE_STAGING_DB,
+                "schema_name": SNOWFLAKE_SCHEMA,
+                "table_name": snowflake_table,
+                "event_dt_col": event_dt_col
+            }
+        )
+
         # Set task dependencies for each dataset
-        download_task >> delete_query_task >> transform_task
-        transform_tasks.append(transform_task)
+        # download_task >> delete_query_task >> transform_task
+        # transform_tasks.append(transform_task)
+        download_task >> delete_query_task >> transform_task >> staging_query_task
+        staging_tasks.append(staging_query_task)
 
         # TRANSFORMATION ---------------------------------------------------------------------
 
     orders_join_customers_reviews_task = SQLExecuteQueryOperator(
         task_id="orders_join_customers_reviews_task",
         conn_id=SNOWFLAKE_CONN_ID,
-        database=SNOWFLAKE_DB,
+        database=SNOWFLAKE_RAW_DB,
         sql='sql/orders_join_customers_reviews.sql',
         params={
-            "db_name": SNOWFLAKE_DB,
+            "db_name": SNOWFLAKE_RAW_DB,
             "schema_name": SNOWFLAKE_SCHEMA
         }
     )
 
     # Set dependency so that orders_join_customers_reviews_task runs after all transform_tasks finish
-    transform_tasks >> orders_join_customers_reviews_task
+    # transform_tasks >> orders_join_customers_reviews_task
+    staging_tasks >> orders_join_customers_reviews_task
