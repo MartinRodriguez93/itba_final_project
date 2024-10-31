@@ -16,7 +16,6 @@ select
 	PAYMENT_INSTALLMENTS,
 	PAYMENT_VALUE,
 	PAYMENT_DATE,
-    TO_TIMESTAMP(INGESTION_DATE / 1e9)::date as event_date,
     UPDATE_TS as updated_at
 from source
 )

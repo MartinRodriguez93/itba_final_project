@@ -17,14 +17,14 @@ PATH_TO_LOCAL_HOME = os.environ.get("AIRFLOW_HOME", "/usr/local/airflow/")
 SF_USER = os.environ.get("SF_USER")
 SF_ACCOUNT = os.environ.get("SF_ACCOUNT")
 SF_PWD = os.environ.get("SF_PWD")
-SNOWFLAKE_CONN_ID = "snowflake_conn"
+SF_CONN_ID = "snowflake_conn"
 
 # Common variables
 RUN_DS = '{{ ds }}'
 TEMPLATE_SEARCHPATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "../snowflake_etl/sql")
-SNOWFLAKE_RAW_DB = "RAW"
-SNOWFLAKE_STAGING_DB = "STAGING"
-SNOWFLAKE_SCHEMA = "ORDERS"
+SF_RAW_DB = "RAW"
+SF_STAGING_DB = "STAGING"
+SF_SCHEMA = "ORDERS"
 
 # Unique variables
 DAG_DICT = {
@@ -53,7 +53,7 @@ with DAG('snowflake_dag', default_args=DEFAULT_ARGS, template_searchpath=[TEMPLA
     staging_tasks = []
     
     for dataset, params in DAG_DICT.items():
-        DATASET_SOURCE, DATASET_FILE, TABLE_NAME, EVENT_DT_COL, staging_query = params
+        DATASET_SOURCE, DATASET_FILE, TABLE_NAME, EVENT_DT_COL, STAGING_QUERY = params
 
         # GENERATION ---------------------------------------------------------------------
 
@@ -66,12 +66,12 @@ with DAG('snowflake_dag', default_args=DEFAULT_ARGS, template_searchpath=[TEMPLA
 
         delete_query_task = SQLExecuteQueryOperator(
             task_id=f"delete_query_{dataset}",
-            conn_id=SNOWFLAKE_CONN_ID,
-            database=SNOWFLAKE_RAW_DB,
+            conn_id=SF_CONN_ID,
+            database=SF_RAW_DB,
             sql='delete_query.sql',
             params={
-                "raw_db_name": SNOWFLAKE_RAW_DB,
-                "schema_name": SNOWFLAKE_SCHEMA,
+                "raw_db_name": SF_RAW_DB,
+                "schema_name": SF_SCHEMA,
                 "table_name": TABLE_NAME,
                 "event_dt_col": EVENT_DT_COL
             }
@@ -88,7 +88,7 @@ with DAG('snowflake_dag', default_args=DEFAULT_ARGS, template_searchpath=[TEMPLA
                 'SF_USER': SF_USER,
                 "SF_ACCOUNT": SF_ACCOUNT,
                 "SF_PWD": SF_PWD,
-                "db_name": SNOWFLAKE_RAW_DB,
+                "db_name": SF_RAW_DB,
                 "table_name": TABLE_NAME,
                 "event_dt_col": EVENT_DT_COL
             },
@@ -96,13 +96,13 @@ with DAG('snowflake_dag', default_args=DEFAULT_ARGS, template_searchpath=[TEMPLA
 
         staging_query_task = SQLExecuteQueryOperator(
             task_id=f"staging_query_{dataset}",
-            conn_id=SNOWFLAKE_CONN_ID,
-            database=SNOWFLAKE_STAGING_DB,
-            sql=f"{staging_query}", 
+            conn_id=SF_CONN_ID,
+            database=SF_STAGING_DB,
+            sql=f"{STAGING_QUERY}", 
             params={
-                "raw_db_name": SNOWFLAKE_RAW_DB,
-                "stg_db_name": SNOWFLAKE_STAGING_DB,
-                "schema_name": SNOWFLAKE_SCHEMA,
+                "raw_db_name": SF_RAW_DB,
+                "stg_db_name": SF_STAGING_DB,
+                "schema_name": SF_SCHEMA,
                 "table_name": TABLE_NAME,
                 "event_dt_col": EVENT_DT_COL
             }
@@ -116,14 +116,24 @@ with DAG('snowflake_dag', default_args=DEFAULT_ARGS, template_searchpath=[TEMPLA
 
     orders_join_customers_reviews_task = SQLExecuteQueryOperator(
         task_id="orders_join_customers_reviews_task",
-        conn_id=SNOWFLAKE_CONN_ID,
-        database=SNOWFLAKE_RAW_DB,
+        conn_id=SF_CONN_ID,
+        database=SF_RAW_DB,
         sql='sql/orders_join_customers_reviews.sql',
         params={
-            "stg_db_name": SNOWFLAKE_STAGING_DB,
-            "schema_name": SNOWFLAKE_SCHEMA
+            "stg_db_name": SF_STAGING_DB,
+            "schema_name": SF_SCHEMA
         }
     )
 
-    # Set dependency so that orders_join_customers_reviews_task runs after all transform_tasks finish
-    staging_tasks >> orders_join_customers_reviews_task
+    order_items_join_sellers_products_task = SQLExecuteQueryOperator(
+        task_id="order_items_join_sellers_products_task",
+        conn_id=SF_CONN_ID,
+        database=SF_RAW_DB,
+        sql='sql/order_items_join_sellers_products.sql',
+        params={
+            "stg_db_name": SF_STAGING_DB,
+            "schema_name": SF_SCHEMA
+        }
+    )
+
+    staging_tasks >> orders_join_customers_reviews_task >> order_items_join_sellers_products_task

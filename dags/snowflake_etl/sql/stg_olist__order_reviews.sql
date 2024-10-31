@@ -15,8 +15,8 @@ select
     review_comment_title, --always null
     review_comment_message,
     review_creation_date AS review_creation_at,
+    review_creation_date::date AS review_creation_dt,
     review_answer_timestamp AS review_answer_at,
-    TO_TIMESTAMP(INGESTION_DATE / 1e9)::date as event_date,
     UPDATE_TS as updated_at
 from source
 )

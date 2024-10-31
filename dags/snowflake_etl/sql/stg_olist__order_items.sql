@@ -15,9 +15,9 @@ select
     PRODUCT_ID,
 	SELLER_ID,
 	SHIPPING_LIMIT_DATE as SHIPPING_LIMIT_at,
+	SHIPPING_LIMIT_DATE::date as SHIPPING_LIMIT_dt,
 	PRICE,
 	FREIGHT_VALUE,
-    TO_TIMESTAMP(INGESTION_DATE / 1e9)::date as event_date,
     UPDATE_TS as updated_at
 from source
 )
