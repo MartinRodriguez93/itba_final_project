@@ -136,4 +136,15 @@ with DAG('snowflake_dag', default_args=DEFAULT_ARGS, template_searchpath=[TEMPLA
         }
     )
 
-    staging_tasks >> orders_join_customers_reviews_task >> order_items_join_sellers_products_task
+    orders_join_payments_task = SQLExecuteQueryOperator(
+        task_id="orders_join_payments_task",
+        conn_id=SF_CONN_ID,
+        database=SF_RAW_DB,
+        sql='sql/orders_join_payments.sql',
+        params={
+            "stg_db_name": SF_STAGING_DB,
+            "schema_name": SF_SCHEMA
+        }
+    )
+
+    staging_tasks >> orders_join_customers_reviews_task >> order_items_join_sellers_products_task >> orders_join_payments_task
