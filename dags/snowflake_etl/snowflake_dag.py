@@ -94,6 +94,19 @@ with DAG('snowflake_dag', default_args=DEFAULT_ARGS, template_searchpath=[TEMPLA
             },
         )
 
+        unique_query_task = SQLExecuteQueryOperator(
+            task_id=f"unique_query_{dataset}",
+            conn_id=SF_CONN_ID,
+            database=SF_RAW_DB,
+            sql=f"unique_query_{dataset}.sql",
+            params={
+                "raw_db_name": SF_RAW_DB,
+                "schema_name": SF_SCHEMA,
+                "table_name": TABLE_NAME,
+                "event_dt_col": EVENT_DT_COL
+            }
+        )
+
         staging_query_task = SQLExecuteQueryOperator(
             task_id=f"staging_query_{dataset}",
             conn_id=SF_CONN_ID,
@@ -109,7 +122,7 @@ with DAG('snowflake_dag', default_args=DEFAULT_ARGS, template_searchpath=[TEMPLA
         )
 
         # Set task dependencies for each dataset
-        download_task >> delete_query_task >> transform_task >> staging_query_task
+        download_task >> delete_query_task >> transform_task >> unique_query_task >> staging_query_task
         staging_tasks.append(staging_query_task)
 
         # TRANSFORMATION ---------------------------------------------------------------------

@@ -9,6 +9,7 @@ from {{ params.raw_db_name }}.{{ params.schema_name }}.{{ params.table_name }}
 --There could be more than one order_id per review_id
 , renamed as (
 select
+    hash(review_id, order_id) as review_key, --primery key
     review_id, --primery key
     order_id,
     review_score, --Values between 1 and 5
