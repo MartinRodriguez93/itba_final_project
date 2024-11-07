@@ -3,6 +3,8 @@ import pandas as pd
 import json
 import snowflake.connector
 from datetime import datetime
+from airflow.exceptions import AirflowFailException
+from jinja2 import Template
 
 def transform_source_system(src_file, 
                             file_name, 
@@ -59,3 +61,50 @@ def transform_source_system(src_file,
 
     print(f"Succesfuly uploaded {file_name} to snowflake.") 
     print(f"Data inserted successfully: {success}, Number of rows inserted: {num_rows}")
+
+def check_row_count(SF_USER, 
+                    SF_ACCOUNT,
+                    SF_PWD, 
+                    db_name, 
+                    table_name,
+                    template_searchpath: str,
+                    params: dict,
+                    **kwargs):
+
+    # Get ds from Airflow context
+    execution_date = kwargs['ds']
+    params['ds'] = execution_date
+
+    con = snowflake.connector.connect(
+            user=SF_USER,
+            password=SF_PWD,
+            account=SF_ACCOUNT,
+            warehouse='COMPUTE_WH',
+            database='RAW',
+            schema='ORDERS'
+        )
+    cursor = con.cursor()
+    
+    try:
+        # Read and render the SQL query template
+        with open(template_searchpath, 'r') as file:
+            query_template = Template(file.read())
+        
+        # Render the template with the params
+        query = query_template.render(params=params)
+
+        print(query)
+        
+        # Execute the query
+        cursor.execute(query)
+
+        # Fetch all rows
+        rows = cursor.fetchall()
+        
+        # Check row count
+        row_count = len(rows)
+        if row_count > 1:
+            raise AirflowFailException(f"Row count exceeded 1: {row_count}")
+    finally:
+        cursor.close()
+        con.close()

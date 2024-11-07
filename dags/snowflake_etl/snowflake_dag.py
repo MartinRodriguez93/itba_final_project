@@ -7,7 +7,8 @@ from airflow.operators.python import PythonOperator
 from airflow.providers.common.sql.operators.sql import SQLExecuteQueryOperator
 
 from dags.snowflake_etl.functions.snowflake_dag_functions import (
-    transform_source_system
+    transform_source_system,
+    check_row_count
 )
 
 # VARIABLES DEFINITION ----------------------------------------------------------------------------------------
@@ -94,17 +95,24 @@ with DAG('snowflake_dag', default_args=DEFAULT_ARGS, template_searchpath=[TEMPLA
             },
         )
 
-        unique_query_task = SQLExecuteQueryOperator(
+        unique_query_task = PythonOperator(
             task_id=f"unique_query_{dataset}",
-            conn_id=SF_CONN_ID,
-            database=SF_RAW_DB,
-            sql=f"unique_query_{dataset}.sql",
-            params={
-                "raw_db_name": SF_RAW_DB,
-                "schema_name": SF_SCHEMA,
+            python_callable=check_row_count,
+            op_kwargs={
+                'SF_USER': SF_USER,
+                "SF_ACCOUNT": SF_ACCOUNT,
+                "SF_PWD": SF_PWD,
+                "db_name": SF_RAW_DB,
                 "table_name": TABLE_NAME,
-                "event_dt_col": EVENT_DT_COL
-            }
+                "template_searchpath": f"{TEMPLATE_SEARCHPATH}/unique_query_{dataset}.sql",
+                "params": {
+                    "raw_db_name": SF_RAW_DB,
+                    "schema_name": SF_SCHEMA,
+                    "table_name": TABLE_NAME,
+                    "event_dt_col": EVENT_DT_COL
+                },
+            },
+            provide_context=True
         )
 
         staging_query_task = SQLExecuteQueryOperator(
