@@ -1,0 +1,58 @@
+[
+    {
+      "name": "ORDER_ID",
+      "mode": "",
+      "type": "STRING",
+      "description": null,
+      "fields": []
+    },
+    {
+      "name": "PAYMENT_SEQUENTIAL",
+      "mode": "",
+      "type": "INT64",
+      "description": null,
+      "fields": []
+    },
+    {
+      "name": "PAYMENT_TYPE",
+      "mode": "",
+      "type": "STRING",
+      "description": null,
+      "fields": []
+    },
+    {
+      "name": "PAYMENT_INSTALLMENTS",
+      "mode": "",
+      "type": "INT64",
+      "description": null,
+      "fields": []
+    },
+    {
+      "name": "PAYMENT_VALUE",
+      "mode": "",
+      "type": "FLOAT64",
+      "description": null,
+      "fields": []
+    },
+    {
+      "name": "PAYMENT_DATE",
+      "mode": "",
+      "type": "DATE",
+      "description": null,
+      "fields": []
+    },
+    {
+      "name": "INGESTION_DATE",
+      "mode": "",
+      "type": "STRING",
+      "description": null,
+      "fields": []
+    },
+    {
+      "name": "UPDATE_TS",
+      "mode": "",
+      "type": "TIMESTAMP",
+      "description": null,
+      "fields": []
+    }
+]

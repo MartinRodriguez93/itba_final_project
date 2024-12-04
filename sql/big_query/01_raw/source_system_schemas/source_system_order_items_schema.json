@@ -1,0 +1,65 @@
+[
+  {
+    "name": "ORDER_ID",
+    "mode": "",
+    "type": "STRING",
+    "description": null,
+    "fields": []
+  },
+  {
+    "name": "ORDER_ITEM_ID",
+    "mode": "",
+    "type": "INT64",
+    "description": null,
+    "fields": []
+  },
+  {
+    "name": "PRODUCT_ID",
+    "mode": "",
+    "type": "STRING",
+    "description": null,
+    "fields": []
+  },
+  {
+    "name": "SELLER_ID",
+    "mode": "",
+    "type": "STRING",
+    "description": null,
+    "fields": []
+  },
+  {
+    "name": "SHIPPING_LIMIT_DATE",
+    "mode": "",
+    "type": "TIMESTAMP",
+    "description": null,
+    "fields": []
+  },
+  {
+    "name": "PRICE",
+    "mode": "",
+    "type": "FLOAT64",
+    "description": null,
+    "fields": []
+  },
+  {
+    "name": "FREIGHT_VALUE",
+    "mode": "",
+    "type": "FLOAT64",
+    "description": null,
+    "fields": []
+  },
+  {
+    "name": "INGESTION_DATE",
+    "mode": "",
+    "type": "STRING",
+    "description": null,
+    "fields": []
+  },
+  {
+    "name": "UPDATE_TS",
+    "mode": "",
+    "type": "TIMESTAMP",
+    "description": null,
+    "fields": []
+  }
+]

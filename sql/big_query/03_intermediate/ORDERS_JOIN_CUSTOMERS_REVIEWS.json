@@ -1,0 +1,22 @@
+[
+  {"name": "ORDER_ID", "type": "STRING", "mode": "REQUIRED"},
+  {"name": "CUSTOMER_ID", "type": "STRING", "mode": "REQUIRED"},
+  {"name": "ORDER_STATUS", "type": "STRING", "mode": "NULLABLE"},
+  {"name": "ORDER_PURCHASE_AT", "type": "STRING", "mode": "NULLABLE"},
+  {"name": "ORDER_APPROVED_AT", "type": "STRING", "mode": "NULLABLE"},
+  {"name": "ORDER_DELIVERED_CARRIER_AT", "type": "STRING", "mode": "NULLABLE"},
+  {"name": "ORDER_DELIVERED_CUSTOMER_AT", "type": "STRING", "mode": "NULLABLE"},
+  {"name": "ORDER_ESTIMATED_DELIVERY_AT", "type": "STRING", "mode": "NULLABLE"},
+  {"name": "ORDER_DT", "type": "DATE", "mode": "NULLABLE"},
+  {"name": "CUSTOMER_UNIQUE_ID", "type": "STRING", "mode": "REQUIRED"},
+  {"name": "CUSTOMER_ZIP_CODE_PREFIX", "type": "INTEGER", "mode": "NULLABLE"},
+  {"name": "CUSTOMER_CITY", "type": "STRING", "mode": "NULLABLE"},
+  {"name": "CUSTOMER_STATE", "type": "STRING", "mode": "NULLABLE"},
+  {"name": "REVIEW_ID", "type": "STRING", "mode": "NULLABLE"},
+  {"name": "REVIEW_SCORE", "type": "INTEGER", "mode": "NULLABLE"},
+  {"name": "REVIEW_COMMENT_MESSAGE", "type": "STRING", "mode": "NULLABLE"},
+  {"name": "REVIEW_CREATION_AT", "type": "STRING", "mode": "NULLABLE"},
+  {"name": "REVIEW_ANSWER_AT", "type": "STRING", "mode": "NULLABLE"},
+  {"name": "review_creation_dt", "type": "DATE", "mode": "NULLABLE"},
+  {"name": "UPDATED_AT", "type": "STRING", "mode": "NULLABLE"}
+]
